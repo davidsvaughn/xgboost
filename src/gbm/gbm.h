@@ -27,6 +27,7 @@ class IGradBooster {
    * \param val  value of the parameter
    */
   virtual void SetParam(const char *name, const char *val) = 0;
+  virtual std::string GetParam(const char *name) = 0;
   /*!
    * \brief load model from stream
    * \param fi input stream

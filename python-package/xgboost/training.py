@@ -83,6 +83,18 @@ def train(params, dtrain, num_boost_round=10, evals=(), obj=None, feval=None,
             params += [('eval_metric', eval_metric)]
 
     bst = Booster(params, [dtrain] + [d[0] for d in evals])
+    #{dsv
+    if learning_rates is None:
+        pdict = dict(params)
+        learning_rates = [pdict["eta"]] * num_boost_round
+    elif early_stopping_rounds is None:
+        early_stopping_rounds = num_boost_round		
+    if len(learning_rates) < num_boost_round:
+        rates = [learning_rates[-1]] * (num_boost_round - len(learning_rates))
+        learning_rates = learning_rates + rates
+    elif len(learning_rates) > num_boost_round:
+        learning_rates = learning_rates[:num_boost_round]
+    #}dsv
     nboost = 0
     num_parallel_tree = 1
 
@@ -169,10 +181,10 @@ def train(params, dtrain, num_boost_round=10, evals=(), obj=None, feval=None,
             else:
                 params = dict(params)
 
-        # either minimize loss or maximize AUC/MAP/NDCG
+        # either minimize loss or maximize AUC/MAP/NDCG/KAPPA
         maximize_score = False
         if 'eval_metric' in params:
-            maximize_metrics = ('auc', 'map', 'ndcg')
+            maximize_metrics = ('auc', 'map', 'ndcg', 'kappa')
             if any(params['eval_metric'].startswith(x) for x in maximize_metrics):
                 maximize_score = True
         if feval is not None:
@@ -423,7 +435,7 @@ def cv(params, dtrain, num_boost_round=10, nfold=3, metrics=(),
 
         maximize_score = False
         if len(metrics) == 1:
-            maximize_metrics = ('auc', 'map', 'ndcg')
+            maximize_metrics = ('auc', 'map', 'ndcg', 'kappa')
             if any(metrics[0].startswith(x) for x in maximize_metrics):
                 maximize_score = True
         if feval is not None:

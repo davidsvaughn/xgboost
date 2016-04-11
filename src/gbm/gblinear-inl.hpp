@@ -35,6 +35,9 @@ class GBLinear : public IGradBooster {
       model.param.SetParam(name, val);
     }
   }
+  virtual std::string GetParam(const char *name)  {
+	  return "";
+  }
   virtual void LoadModel(utils::IStream &fi, bool with_pbuffer) { // NOLINT(*)
     model.LoadModel(fi);
   }

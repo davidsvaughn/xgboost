@@ -12,6 +12,10 @@
 #include <utility>
 #include <cmath>
 #include <functional>
+#include <numeric>
+#include <iostream>
+#include <sstream>
+#include <fstream>
 #include "../data.h"
 #include "./objective.h"
 #include "./helper_utils.h"
@@ -29,6 +33,7 @@ struct LossType {
   static const int kLogisticNeglik = 1;
   static const int kLogisticClassify = 2;
   static const int kLogisticRaw = 3;
+  static const int kKappa = 4;
   /*!
    * \brief transform the linear sum to prediction
    * \param x linear sum of boosting ensemble
@@ -36,6 +41,7 @@ struct LossType {
    */
   inline float PredTransform(float x) const {
     switch (loss_type) {
+      case kKappa:
       case kLogisticRaw:
       case kLinearSquare: return x;
       case kLogisticClassify:
@@ -47,7 +53,7 @@ struct LossType {
    * \brief check if label range is valid
    */
   inline bool CheckLabel(float x) const {
-    if (loss_type != kLinearSquare) {
+    if (loss_type != kLinearSquare && loss_type != kKappa) {
       return x >= 0.0f && x <= 1.0f;
     }
     return true;
@@ -56,7 +62,7 @@ struct LossType {
    * \brief error message displayed when check label fail
    */
   inline const char * CheckLabelErrorMsg(void) const {
-    if (loss_type != kLinearSquare) {
+    if (loss_type != kLinearSquare && loss_type != kKappa) {
       return "label must be in [0,1] for logistic regression";
     } else {
       return "";
@@ -87,6 +93,7 @@ struct LossType {
     // cap second order gradient to positive value
     const float eps = 1e-16f;
     switch (loss_type) {
+      case kKappa:
       case kLinearSquare: return 1.0f;
       case kLogisticRaw: predt = 1.0f / (1.0f + std::exp(-predt));
       case kLogisticClassify:
@@ -111,6 +118,7 @@ struct LossType {
   inline const char *DefaultEvalMetric(void) const {
     if (loss_type == kLogisticClassify) return "error";
     if (loss_type == kLogisticRaw) return "auc";
+	if (loss_type == kKappa) return "kappa";
     return "rmse";
   }
 };
@@ -636,6 +644,132 @@ class LambdaRankObjMAP : public LambdaRankObj {
     }
   }
 };
+
+//added for kappa optimization
+class KappaLossObj : public IObjFunction {
+public:
+	explicit KappaLossObj(int loss_type) {
+		loss.loss_type = LossType::kKappa;
+		scale_pos_weight = 1.0f;
+		ymu = 0.0f;
+		ysig = 1.0f;
+	}
+	virtual ~KappaLossObj(void) {}
+	virtual void SetParam(const char *name, const char *val) {
+		using namespace std;
+		if (!strcmp("scale_pos_weight", name)) {
+			scale_pos_weight = static_cast<float>(atof(val));
+		}
+		if (!strcmp("x", name)) {
+			stringstream ss(val);
+			while (ss.good())
+			{
+				string substr;
+				getline(ss, substr, ',');
+				x.push_back(atof(substr.c_str()));
+			}
+		}
+		if (!strcmp("ymu", name)) ymu = static_cast<float>(atof(val));
+		if (!strcmp("ysig", name)) ysig = static_cast<float>(atof(val));
+	}
+	virtual void GetGradient(const std::vector<float> &preds,
+		const MetaInfo &info,
+		int iter,
+		std::vector<bst_gpair> *out_gpair) {
+		utils::Check(info.labels.size() != 0, "label set cannot be empty");
+		utils::Check(preds.size() % info.labels.size() == 0,
+			"labels are not correctly provided");
+		std::vector<bst_gpair> &gpair = *out_gpair;
+		gpair.resize(preds.size());
+		bool label_correct = true;
+
+		// start calculating gradient
+		const unsigned nstep = static_cast<unsigned>(info.labels.size());
+		const bst_omp_uint ndata = static_cast<bst_omp_uint>(preds.size());
+
+		// QW-KAPPA GRADIENT //
+		ymu = info.ymu;
+		ysig = info.ysig;
+		float xTy = std::inner_product(begin(preds), end(preds), begin(info.labels), 0.0);
+		float xTx = std::inner_product(begin(preds), end(preds), begin(preds), 0.0);
+		float yTy = std::inner_product(begin(info.labels), end(info.labels), begin(info.labels), 0.0); //float yTy = nstep;
+		// compute these just once for efficiency...
+		float C0 = pow(xTx + yTy, 2);
+		float C1 = 4 * xTy / C0;
+		float C2 = -2 / (xTx + yTy);
+		float C3 = 8 / C0;
+		float C4 = -16 * xTy / pow(xTx + yTy, 3);
+		//
+		float grad, hess = 1.0f;
+		float W = 1.0f;
+		float x0 = 0, x1 = 0, x2 = 1;
+		if (x.size() > 0) x0 = x[0];
+		if (x.size() > 1) x1 = x[1];
+		if (x.size() > 2) x2 = x[2];
+		//
+		bool h = (x0 >= 0);
+		if (x0 > 0 && iter < x0) {
+			h = false;
+			if (x1 >= 0) {
+				// W is a normalization factor (to use instead of Hessian)
+				// --> both 'W' and 'hess' serve to normalize gradient steps -->
+				// not important unless # data points ('nstep') grows very large,
+				// in which case gradient at each point can become very small...
+				W = yTy * std::max(1.0f, x2 * std::exp(-x1 * iter));
+			}
+		}
+		//
+#pragma omp parallel for schedule(static)
+		for (bst_omp_uint i = 0; i < ndata; ++i) {
+			const unsigned j = i % nstep;
+			float x = loss.PredTransform(preds[i]);
+			float y = info.labels[j];
+			float w = info.GetWeight(j);
+			if (info.labels[j] == 1.0f) w *= scale_pos_weight;
+			if (!loss.CheckLabel(info.labels[j])) label_correct = false;
+			
+			// GRADIENT (assuming y IS centered) //
+			// -dK/dx = 4*x*xTy/(xTx + yTy)^2 - 2*y/(xTx + yTy);
+			grad = x*C1 + y*C2;
+
+			if (h) {
+				// HESSIAN (diagonal approx, assuming y IS centered) //
+				// -d^2K/dx^2 = 4*(xTy + 2*x*y)/(xTx + yTy)^2 - 16*xTy*x^2/(xTx + yTy)^3;
+				hess = C1 + x*y*C3 + x*x*C4;
+
+				// "roll-in" hessian with gradient (basically equivalent, if you look at GBRT update step...)
+				// --> this is an attempt to avoid strange "min_child_weight" issues with hessian...(?)
+				W = 1.0f / hess;
+				hess = 1.0f;
+			}
+
+			// return //
+			gpair[i] = bst_gpair(W*grad, hess);
+		}
+		utils::Check(label_correct, loss.CheckLabelErrorMsg());
+	}
+	virtual const char* DefaultEvalMetric(void) const {
+		return loss.DefaultEvalMetric();
+	}
+	virtual void PredTransform(std::vector<float> *io_preds) {
+		std::vector<float> &preds = *io_preds;
+		const bst_omp_uint ndata = static_cast<bst_omp_uint>(preds.size());
+#pragma omp parallel for schedule(static)
+		for (bst_omp_uint j = 0; j < ndata; ++j) {
+			preds[j] = preds[j] * ysig + ymu;
+		}
+	}
+	virtual float ProbToMargin(float base_score) const {
+		return loss.ProbToMargin(base_score);
+	}
+
+protected:
+	float scale_pos_weight;
+	LossType loss;
+	std::vector<float> x;
+	float ymu, ysig;
+};
+//end kappa
 
 }  // namespace learner
 }  // namespace xgboost

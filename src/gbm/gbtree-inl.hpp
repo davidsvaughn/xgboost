@@ -42,6 +42,13 @@ class GBTree : public IGradBooster {
     tparam.SetParam(name, val);
     if (trees.size() == 0) mparam.SetParam(name, val);
   }
+  virtual std::string GetParam(const char *name)  {
+	  if (!strcmp(name, "mu")) 
+		  return static_cast<std::ostringstream&>(std::ostringstream() << mparam.mu).str();
+	  if (!strcmp(name, "sig")) 
+		  return static_cast<std::ostringstream&>(std::ostringstream() << mparam.sig).str();
+	  return "";
+  }
   virtual void LoadModel(utils::IStream &fi, bool with_pbuffer) { // NOLINT(*)
     this->Clear();
     utils::Check(fi.Read(&mparam, sizeof(ModelParam)) != 0,
@@ -448,6 +455,8 @@ class GBTree : public IGradBooster {
     int num_feature;
     /*! \brief size of prediction buffer allocated used for buffering */
     int64_t num_pbuffer;
+	//
+	float mu, sig;
     /*!
      * \brief how many output group a single instance can produce
      *  this affects the behavior of number of output we have:
@@ -466,6 +475,8 @@ class GBTree : public IGradBooster {
       num_pbuffer = 0;
       num_output_group = 1;
       size_leaf_vector = 0;
+	  mu = 0;
+	  sig = 1;
     }
     /*!
      * \brief set parameters from outside
@@ -479,6 +490,8 @@ class GBTree : public IGradBooster {
       if (!strcmp("bst:num_roots", name)) num_roots = atoi(val);
       if (!strcmp("bst:num_feature", name)) num_feature = atoi(val);
       if (!strcmp("bst:size_leaf_vector", name)) size_leaf_vector = atoi(val);
+	  if (!strcmp("mu", name)) mu = static_cast<float>(atof(val));//dsv
+	  if (!strcmp("sig", name)) sig = static_cast<float>(atof(val));//dsv
     }
     /*! \return size of prediction buffer actually needed */
     inline size_t PredBufferSize(void) const {

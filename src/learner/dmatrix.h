@@ -10,6 +10,9 @@
 
 #include <vector>
 #include <cstring>
+#include <numeric>
+#include <functional>
+#include <algorithm>
 #include "../data.h"
 #include "../utils/io.h"
 namespace xgboost {
@@ -26,6 +29,38 @@ struct MetaInfo {
   BoosterInfo info;
   /*! \brief label of each instance */
   std::vector<float> labels;
+  
+  //added for kappa optimization
+  bool isStd = false;
+  float ymu, ysig;
+  inline static float Mean(std::vector<float> v) {
+	  float sum = std::accumulate(v.begin(), v.end(), 0.0);
+	  return sum / v.size();
+  }
+  inline static float Deviation(std::vector<float> v, float mu) {
+	  std::vector<float> diff(v.size());
+	  std::transform(v.begin(), v.end(), diff.begin(), std::bind2nd(std::minus<float>(), mu));
+	  float sq_sum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
+	  return std::sqrt(sq_sum / v.size());
+  }
+  inline static void Standardize(std::vector<float> *v, float mu, float sig) {
+	  std::transform(v->begin(), v->end(), v->begin(), std::bind2nd(std::minus<float>(), mu));
+	  std::transform(v->begin(), v->end(), v->begin(), std::bind2nd(std::divides<float>(), sig));
+  }
+  inline static void InverseStandardize(std::vector<float> *v, float mu, float sig) {
+	  std::transform(v->begin(), v->end(), v->begin(), std::bind2nd(std::multiplies<float>(), sig));
+	  std::transform(v->begin(), v->end(), v->begin(), std::bind2nd(std::plus<float>(), mu));
+  }
+  inline void StandardizeLabels() {
+	  if (!isStd) {
+		  ymu = Mean(labels);
+		  ysig = Deviation(labels, ymu);
+		  Standardize(&labels, ymu, ysig);
+		  isStd = true;
+	  }
+  }
+  //end kappa
+  
   /*!
    * \brief the index of begin and end of a group
    * needed when the learning task is ranking

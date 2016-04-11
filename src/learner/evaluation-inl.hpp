@@ -13,6 +13,7 @@
 #include <cmath>
 #include <climits>
 #include <algorithm>
+#include <numeric>
 #include "../sync/sync.h"
 #include "../utils/math.h"
 #include "./evaluation.h"
@@ -20,6 +21,32 @@
 
 namespace xgboost {
 namespace learner {
+	
+		//
+		struct EvalKappa : public IEvaluator{
+		public:
+			virtual float Eval(const std::vector<float> &preds, const MetaInfo &info, bool distributed) const {
+				utils::Check(!distributed, "metric %s do not support distributed evaluation", Name());
+				utils::Check(info.labels.size() != 0, "label set cannot be empty");
+				utils::Assert(preds.size() % info.labels.size() == 0,
+					"label size predict size not match");
+				//
+				float N = info.labels.size();// num data points
+				std::vector<float> e; e.assign(N, 1.0);// all ones vector
+				float xmu = std::inner_product(begin(preds), end(preds), begin(e), 0.0) / N;// mean(x)
+				float ymu = std::inner_product(begin(info.labels), end(info.labels), begin(e), 0.0) / N;// mean(y)
+				float xTx = std::inner_product(begin(preds), end(preds), begin(preds), 0.0);
+				float yTy = std::inner_product(begin(info.labels), end(info.labels), begin(info.labels), 0.0);
+				float xTy = std::inner_product(begin(preds), end(preds), begin(info.labels), 0.0);
+				float term = 2 * N * xmu * ymu;
+				float kappa = (2 * xTy - term) / (xTx + yTy - term);
+				return static_cast<float>(kappa);
+			}
+			virtual const char *Name(void) const {
+				return "kappa";
+			}
+		};
+		//
 /*!
  * \brief base class of element-wise evaluation
  * \tparam Derived the name of subclass

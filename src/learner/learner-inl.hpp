@@ -40,6 +40,7 @@ class BoostLearner : public rabit::Serializable {
     seed_per_iteration = 0;
     seed = 0;
     save_base64 = 0;
+	x = "";
   }
   virtual ~BoostLearner(void) {
     if (obj_ != NULL) delete obj_;
@@ -81,6 +82,7 @@ class BoostLearner : public rabit::Serializable {
    */
   inline void SetParam(const char *name, const char *val) {
     using namespace std;
+	if (!strcmp("x", name)) x = val;//dsv
     // in this version, bst: prefix is no longer required
     if (strncmp(name, "bst:", 4) != 0) {
       std::string n = "bst:"; n += name;
@@ -192,6 +194,8 @@ class BoostLearner : public rabit::Serializable {
     utils::SPrintf(tmp, sizeof(tmp), "%u", mparam.num_class);
     obj_->SetParam("num_class", tmp);
     gbm_->LoadModel(fi, mparam.saved_with_pbuffer != 0);
+	obj_->SetParam("ymu", gbm_->GetParam("mu").c_str());//dsv
+	obj_->SetParam("ysig", gbm_->GetParam("sig").c_str());//dsv
     if (mparam.saved_with_pbuffer == 0) {
       gbm_->ResetPredBuffer(pred_buffer_size);
     }
@@ -279,6 +283,14 @@ class BoostLearner : public rabit::Serializable {
     if (p_train->magic == kMagicPage) {
       this->SetParam("updater", "grow_histmaker,prune");
     }
+	//added for kappa optimization
+	if (name_obj_ == "reg:kappa") {
+		mparam.SetParam("base_score", "0");
+		p_train->info.StandardizeLabels();
+		gbm_->SetParam("mu", static_cast<std::ostringstream&>(std::ostringstream() << p_train->info.ymu).str().c_str());
+		gbm_->SetParam("sig", static_cast<std::ostringstream&>(std::ostringstream() << p_train->info.ysig).str().c_str());
+	}
+	//end kappa
   }
   /*!
    * \brief update the model for one iteration
@@ -315,7 +327,8 @@ class BoostLearner : public rabit::Serializable {
     res = tmp;
     for (size_t i = 0; i < evals.size(); ++i) {
       this->PredictRaw(*evals[i], &preds_);
-      obj_->EvalTransform(&preds_);
+	  if (name_obj_ != "reg:kappa" || !evals[i]->info.isStd)//dsv
+		  obj_->EvalTransform(&preds_);
       res += evaluator_.Eval(evname[i].c_str(), preds_, evals[i]->info, distributed_mode == 2);
     }
     return res;
@@ -515,6 +528,8 @@ class BoostLearner : public rabit::Serializable {
   std::vector<float> preds_;
   // gradient pairs
   std::vector<bst_gpair> gpair_;
+  //
+  std::string x;//dsv
 
  protected:
   // magic number to transform random seed
