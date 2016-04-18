@@ -1,4 +1,4 @@
-XGBoost+QWK: XGBoost augmented for \kappa
+XGBoost+<img src="http://www.sciweavers.org/tex2img.php?eq=%20%5Ckappa_w%5E%7B%282%29%7D&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0" align="center" border="0" alt=" \kappa_w^{(2)}" width="33" height="26" /> -- direct optimization of Quadratic Weighted Kappa
 --------
 * Easily accessible through CLI, [python](https://github.com/dmlc/xgboost/blob/master/demo/guide-python/basic_walkthrough.py),
   [R](https://github.com/dmlc/xgboost/blob/master/R-package/demo/basic_walkthrough.R),
