@@ -1,7 +1,7 @@
 QWiKBoost: XGBoost + Quadratic Weighted Kappa optimization
 --------
 * XGBoost with added support for *direct* optimization of Quadratic Weighted Kappa objective function
-
+* forked from XGBoost commit [0dc68b1aefe4a09775a2b86103643f9bce6979d2](https://github.com/dmlc/xgboost/tree/0dc68b1aefe4a09775a2b86103643f9bce6979d2)
 
 
 
