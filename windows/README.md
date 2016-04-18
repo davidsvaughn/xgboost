@@ -1,4 +1,4 @@
-The solution has been created with Visual Studio Express 2010.
+The solution has been created with Visual Studio 2013.
 
 How to Build Windows Version
 =====

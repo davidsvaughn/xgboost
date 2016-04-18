@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xgboost", "xgboost\xgboost.vcxproj", "{19766C3F-7508-49D0-BAAC-0988FCC9970C}"
 	ProjectSection(ProjectDependencies) = postProject
 		{D7B77D06-4F5F-4BD7-B81E-7CC8EBBE684F} = {D7B77D06-4F5F-4BD7-B81E-7CC8EBBE684F}
@@ -13,8 +15,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xgboost_wrapper", "xgboost_
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rabit", "..\subtree\rabit\windows\rabit\rabit.vcxproj", "{D7B77D06-4F5F-4BD7-B81E-7CC8EBBE684F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xgboostjavawrapper", "xgboostjavawrapper\xgboostjavawrapper.vcxproj", "{20A0E4D7-20C7-4EC1-BDF6-0D469CE239AA}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -26,6 +26,7 @@ Global
 		{19766C3F-7508-49D0-BAAC-0988FCC9970C}.Debug|Win32.ActiveCfg = Debug|Win32
 		{19766C3F-7508-49D0-BAAC-0988FCC9970C}.Debug|Win32.Build.0 = Debug|Win32
 		{19766C3F-7508-49D0-BAAC-0988FCC9970C}.Debug|x64.ActiveCfg = Debug|x64
+		{19766C3F-7508-49D0-BAAC-0988FCC9970C}.Debug|x64.Build.0 = Debug|x64
 		{19766C3F-7508-49D0-BAAC-0988FCC9970C}.Release|Win32.ActiveCfg = Release|Win32
 		{19766C3F-7508-49D0-BAAC-0988FCC9970C}.Release|Win32.Build.0 = Release|Win32
 		{19766C3F-7508-49D0-BAAC-0988FCC9970C}.Release|x64.ActiveCfg = Release|x64
@@ -46,13 +47,6 @@ Global
 		{D7B77D06-4F5F-4BD7-B81E-7CC8EBBE684F}.Release|Win32.Build.0 = Release|Win32
 		{D7B77D06-4F5F-4BD7-B81E-7CC8EBBE684F}.Release|x64.ActiveCfg = Release|x64
 		{D7B77D06-4F5F-4BD7-B81E-7CC8EBBE684F}.Release|x64.Build.0 = Release|x64
-		{20A0E4D7-20C7-4EC1-BDF6-0D469CE239AA}.Debug|Win32.ActiveCfg = Debug|Win32
-		{20A0E4D7-20C7-4EC1-BDF6-0D469CE239AA}.Debug|Win32.Build.0 = Debug|Win32
-		{20A0E4D7-20C7-4EC1-BDF6-0D469CE239AA}.Debug|x64.ActiveCfg = Debug|x64
-		{20A0E4D7-20C7-4EC1-BDF6-0D469CE239AA}.Release|Win32.ActiveCfg = Release|Win32
-		{20A0E4D7-20C7-4EC1-BDF6-0D469CE239AA}.Release|Win32.Build.0 = Release|Win32
-		{20A0E4D7-20C7-4EC1-BDF6-0D469CE239AA}.Release|x64.ActiveCfg = Release|x64
-		{20A0E4D7-20C7-4EC1-BDF6-0D469CE239AA}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
