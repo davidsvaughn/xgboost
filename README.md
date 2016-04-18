@@ -1,3 +1,16 @@
+XGBoost+QWK: XGBoost augmented for \kappa
+--------
+* Easily accessible through CLI, [python](https://github.com/dmlc/xgboost/blob/master/demo/guide-python/basic_walkthrough.py),
+  [R](https://github.com/dmlc/xgboost/blob/master/R-package/demo/basic_walkthrough.R),
+  [Julia](https://github.com/antinucleon/XGBoost.jl/blob/master/demo/basic_walkthrough.jl)
+* Its fast! Benchmark numbers comparing xgboost, H20, Spark, R - [benchm-ml numbers](https://github.com/szilard/benchm-ml)
+* Memory efficient - Handles sparse matrices, supports external memory
+* Accurate prediction, and used extensively by data scientists and kagglers - [highlight links](https://github.com/dmlc/xgboost/blob/master/doc/README.md#highlight-links)
+* Distributed version runs on Hadoop (YARN), MPI, SGE etc., scales to billions of examples.
+
+
+
+
 <img src=https://raw.githubusercontent.com/dmlc/dmlc.github.io/master/img/logo-m/xgboost.png width=135/>  eXtreme Gradient Boosting
 ===========
 [![Build Status](https://travis-ci.org/dmlc/xgboost.svg?branch=master)](https://travis-ci.org/dmlc/xgboost)
