@@ -66,6 +66,7 @@ Specify the learning task and the corresponding learning objective. The objectiv
 * objective [ default=reg:linear ]
  - "reg:linear" --linear regression
  - "reg:logistic" --logistic regression
+ **- "reg:kappa" --kappa regression (*new*)**
  - "binary:logistic" --logistic regression for binary classification, output probability
  - "binary:logitraw" --logistic regression for binary classification, output score before logistic transformation
  - "count:poisson" --poisson regression for count data, output mean of poisson distribution
