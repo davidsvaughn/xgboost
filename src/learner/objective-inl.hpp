@@ -702,7 +702,7 @@ public:
 		//
 		float grad, hess = 1.0f;
 		float W = 1.0f;
-		float x0 = 0, x1 = 0, x2 = 1;
+		float x0 = 5, x1 = 0, x2 = 1;
 		if (x.size() > 0) x0 = x[0];
 		if (x.size() > 1) x1 = x[1];
 		if (x.size() > 2) x2 = x[2];
@@ -714,7 +714,7 @@ public:
 				// W is a normalization factor (to use instead of Hessian)
 				// --> both 'W' and 'hess' serve to normalize gradient steps -->
 				// not important unless # data points ('nstep') grows very large,
-				// in which case gradient at each point can become very small...
+				// in which case gradient at each point can become very small...	//dsv
 				W = yTy * std::max(1.0f, x2 * std::exp(-x1 * iter));
 			}
 		}
@@ -729,16 +729,16 @@ public:
 			if (!loss.CheckLabel(info.labels[j])) label_correct = false;
 			
 			// GRADIENT (assuming y IS centered) //
-			// -dK/dx = 4*x*xTy/(xTx + yTy)^2 - 2*y/(xTx + yTy);
+			// -dK/dx = 4*x*xTy/(xTx + yTy)^2 - 2*y/(xTx + yTy);	//dsv
 			grad = x*C1 + y*C2;
 
 			if (h) {
 				// HESSIAN (diagonal approx, assuming y IS centered) //
-				// -d^2K/dx^2 = 4*(xTy + 2*x*y)/(xTx + yTy)^2 - 16*xTy*x^2/(xTx + yTy)^3;
+				// -d^2K/dx^2 = 4*(xTy + 2*x*y)/(xTx + yTy)^2 - 16*xTy*x^2/(xTx + yTy)^3;	//dsv
 				hess = C1 + x*y*C3 + x*x*C4;
 
 				// "roll-in" hessian with gradient (basically equivalent, if you look at GBRT update step...)
-				// --> this is an attempt to avoid strange "min_child_weight" issues with hessian...(?)
+				// --> this is an attempt to avoid strange "min_child_weight" issues with hessian...(?)		//dsv
 				W = 1.0f / hess;
 				hess = 1.0f;
 			}
