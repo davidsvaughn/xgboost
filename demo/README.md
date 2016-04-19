@@ -44,6 +44,7 @@ However, the parameter settings can be applied to all versions
 * [Multiclass classification](multiclass_classification)
 * [Regression](regression)
 * [Learning to Rank](rank)
+* [Kappa Regression](kappa-regression) **(new)**
 
 Benchmarks
 ----------
