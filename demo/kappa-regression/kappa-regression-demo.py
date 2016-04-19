@@ -58,10 +58,10 @@ def eval_wrapper(yhat, y):
 
 print("load the data using pandas")
 train = pd.read_csv("../data/train.csv")
+test = pd.read_csv("../data/test.csv")
 data = train
 
 # combine train and test
-test = pd.read_csv("../data/test.csv")
 data = data.append(test)
 
 # create any new variables    
