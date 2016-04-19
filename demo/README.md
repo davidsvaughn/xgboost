@@ -49,5 +49,5 @@ However, the parameter settings can be applied to all versions
 Benchmarks
 ----------
 * [Starter script for Kaggle Higgs Boson](kaggle-higgs)
-* [Starter script for Kaggle Prudential Life Insurance Assessment](kappa-regression)
+* [Starter script for Kaggle Prudential Life Insurance Assessment](kappa-regression) **(new)**
 * [Kaggle Tradeshift winning solution by daxiongshu](https://github.com/daxiongshu/kaggle-tradeshift-winning-solution)
