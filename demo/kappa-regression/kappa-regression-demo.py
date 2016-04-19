@@ -1,11 +1,3 @@
-#!/usr/bin/python
-import sys
-import xgboost as xgb
-import pandas as pd 
-import numpy as np 
-from scipy.optimize import fmin_powell
-from ml_metrics import quadratic_weighted_kappa
-
 '''
 This demo is based on Kaggle Contest "Prudential Life Insurance Assessment"
 which uses Quadratic Weighted Kappa for evaluation criterion.
@@ -13,7 +5,14 @@ which uses Quadratic Weighted Kappa for evaluation criterion.
 
 Before running, first download data to "../data" folder.
 (https://www.kaggle.com/c/prudential-life-insurance-assessment/data)
+
+Tested with Python2.7
 '''
+
+import xgboost as xgb
+import pandas as pd 
+import numpy as np 
+from ml_metrics import quadratic_weighted_kappa
 
 # global variables
 split = 10
