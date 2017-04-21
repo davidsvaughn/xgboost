@@ -13,6 +13,9 @@
 #include <numeric>
 #include <functional>
 #include <algorithm>
+#ifdef __linux__
+ #include <cmath>
+#endif
 #include "../data.h"
 #include "../utils/io.h"
 namespace xgboost {

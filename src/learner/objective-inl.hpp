@@ -21,7 +21,6 @@
 #include "./helper_utils.h"
 #include "../utils/random.h"
 #include "../utils/omp.h"
-
 namespace xgboost {
 namespace learner {
 /*! \brief defines functions to calculate some commonly used functions */
@@ -690,16 +689,22 @@ public:
 		// QW-KAPPA GRADIENT //
 		ymu = info.ymu;
 		ysig = info.ysig;
-		float xTy = std::inner_product(begin(preds), end(preds), begin(info.labels), 0.0);
-		float xTx = std::inner_product(begin(preds), end(preds), begin(preds), 0.0);
-		float yTy = std::inner_product(begin(info.labels), end(info.labels), begin(info.labels), 0.0); //float yTy = nstep;
-		// compute these just once for efficiency...
+#ifdef __linux__
+    float xTy = std::inner_product(preds.begin(), preds.end(), info.labels.begin(), 0.0);
+    float xTx = std::inner_product(preds.begin(), preds.end(), preds.begin(), 0.0);
+    float yTy = std::inner_product(info.labels.begin(), info.labels.end(), info.labels.begin(), 0.0);
+#elif _WIN32
+    float xTy = std::inner_product(begin(preds), end(preds), begin(info.labels), 0.0);
+    float xTx = std::inner_product(begin(preds), end(preds), begin(preds), 0.0);
+    float yTy = std::inner_product(begin(info.labels), end(info.labels), begin(info.labels), 0.0);
+#endif
+		// compute these terms only once... for efficiency...
 		float C0 = pow(xTx + yTy, 2);
 		float C1 = 4 * xTy / C0;
 		float C2 = -2 / (xTx + yTy);
 		float C3 = 8 / C0;
 		float C4 = -16 * xTy / pow(xTx + yTy, 3);
-		//
+		// done
 		float grad, hess = 1.0f;
 		float W = 1.0f;
 		float x0 = 5, x1 = 0, x2 = 1;

@@ -33,11 +33,19 @@ namespace learner {
 				//
 				float N = info.labels.size();// num data points
 				std::vector<float> e; e.assign(N, 1.0);// all ones vector
-				float xmu = std::inner_product(begin(preds), end(preds), begin(e), 0.0) / N;// mean(x)
-				float ymu = std::inner_product(begin(info.labels), end(info.labels), begin(e), 0.0) / N;// mean(y)
-				float xTx = std::inner_product(begin(preds), end(preds), begin(preds), 0.0);
-				float yTy = std::inner_product(begin(info.labels), end(info.labels), begin(info.labels), 0.0);
-				float xTy = std::inner_product(begin(preds), end(preds), begin(info.labels), 0.0);
+#ifdef __linux__
+        float xmu = std::inner_product(preds.begin(), preds.end(), e.begin(), 0.0) / N;// mean(x)
+        float ymu = std::inner_product(info.labels.begin(), info.labels.end(), e.begin(), 0.0) / N;// mean(y)
+        float xTx = std::inner_product(preds.begin(), preds.end(), preds.begin(), 0.0);
+        float yTy = std::inner_product(info.labels.begin(), info.labels.end(), info.labels.begin(), 0.0);
+        float xTy = std::inner_product(preds.begin(), preds.end(), info.labels.begin(), 0.0);
+#elif _WIN32
+        float xmu = std::inner_product(begin(preds), end(preds), begin(e), 0.0) / N;// mean(x)
+        float ymu = std::inner_product(begin(info.labels), end(info.labels), begin(e), 0.0) / N;// mean(y)
+        float xTx = std::inner_product(begin(preds), end(preds), begin(preds), 0.0);
+        float yTy = std::inner_product(begin(info.labels), end(info.labels), begin(info.labels), 0.0);
+        float xTy = std::inner_product(begin(preds), end(preds), begin(info.labels), 0.0);
+#endif
 				float term = 2 * N * xmu * ymu;
 				float kappa = (2 * xTy - term) / (xTx + yTy - term);
 				return static_cast<float>(kappa);
