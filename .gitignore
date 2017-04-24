@@ -16,7 +16,7 @@
 *.rds
 *.tar.gz
 *txt*
-*conf
+#*conf
 *buffer
 *model
 *pyc
@@ -36,7 +36,7 @@ ipch
 *log
 Debug
 *suo
-*test*
+#*test*
 .Rhistory
 *.dll
 *i386
