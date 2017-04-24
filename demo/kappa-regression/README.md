@@ -14,4 +14,7 @@ bash runexp.sh
 ```
 
 
-Alternatively, one can run the python interface demo with: ```python kappa-regression-demo.py```
+Alternatively, one can run the python interface demo with: 
+```bash
+python kappa-regression-demo.py
+```

@@ -1,16 +1,5 @@
 #!/bin/bash
 
-# if [ -f YearPredictionMSD.txt ]
-# then
-#     echo "use existing data to run experiment"
-# else
-#     echo "getting data from uci, make sure you are connected to internet"
-#     wget https://archive.ics.uci.edu/ml/machine-learning-databases/00203/YearPredictionMSD.txt.zip
-#     unzip YearPredictionMSD.txt.zip
-# fi
-# map feature using indicator encoding, also produce featmap.txt
-
-#========================================================================
 if [ $1 -eq 1 ]
 then
 	echo "massage data..."

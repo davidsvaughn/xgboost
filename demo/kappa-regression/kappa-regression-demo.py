@@ -42,7 +42,7 @@ def get_kappa_params():
     params["min_child_weight"] = 5
     params["silent"] = 0
     params["early_stopping_rounds"] = 100
-    #params["x"] = "5,0,1"  ## default values
+    params["x"] = "10,0,1"  ## default values
     plst = list(params.items())
     return plst, params
 
