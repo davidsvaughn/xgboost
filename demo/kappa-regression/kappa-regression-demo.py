@@ -3,7 +3,7 @@ This demo is based on Kaggle Contest "Prudential Life Insurance Assessment"
 which uses Quadratic Weighted Kappa for evaluation criterion.
 (https://www.kaggle.com/c/prudential-life-insurance-assessment)
 
-Before running, first download data to "../data" folder.
+Before running, first download data to current folder, and unzip.
 (https://www.kaggle.com/c/prudential-life-insurance-assessment/data)
 
 Tested with Python2.7
@@ -57,8 +57,8 @@ def eval_wrapper(yhat, y):
     return quadratic_weighted_kappa(yhat, y)
 
 print("load the data using pandas")
-train = pd.read_csv("../data/train.csv")
-test = pd.read_csv("../data/test.csv")
+train = pd.read_csv("./train.csv")
+test = pd.read_csv("./test.csv")
 data = train
 
 # combine train and test
@@ -129,7 +129,7 @@ train_preds = model.predict(xgdata, ntree_limit=best_iter)
 print('train score is:', eval_wrapper(train_preds, y_train))
 
 # dump model
-#model.dump_model('../data/xgb.model', with_stats=True)
+#model.dump_model('./xgb.model', with_stats=True)
 
 # generate predictions on test data
 print('generating predictions on test data')
@@ -137,6 +137,6 @@ test_preds = model.predict(xgtest, ntree_limit=best_iter)
 final_test_preds = np.round(np.clip(test_preds, 1, 8)).astype(int)
 preds_out = pd.DataFrame({"Id": test['Id'].values, "Response": final_test_preds})
 preds_out = preds_out.set_index('Id')
-preds_out.to_csv('../data/test_preds.csv')
+preds_out.to_csv('./test_preds.csv')
 
 print('Done!')
