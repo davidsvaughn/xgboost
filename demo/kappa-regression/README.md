@@ -18,3 +18,4 @@ Alternatively, one can run the python interface demo with:
 ```bash
 python kappa-regression-demo.py
 ```
+(but this will be slower)
