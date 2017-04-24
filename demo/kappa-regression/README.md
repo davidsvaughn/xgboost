@@ -1,17 +1,9 @@
-Highlights
-=====
-Higgs challenge ends recently, xgboost is being used by many users. This list highlights the xgboost solutions of players
-* Blogpost by phunther: [Winning solution of Kaggle Higgs competition: what a single model can do](http://no2147483647.wordpress.com/2014/09/17/winning-solution-of-kaggle-higgs-competition-what-a-single-model-can-do/) 
-* The solution by Tianqi Chen and Tong He [Link](https://github.com/hetong007/higgsml)
-
-Guide for Kaggle Higgs Challenge
+Guide for Kappa Regression
 =====
 
-This is the folder giving example of how to use XGBoost Python Module  to run Kaggle Higgs competition
+This demonstrates how to use XGBoost Kappa Regression for the [Kaggle Prudential Life Insurance Assessment](https://www.kaggle.com/c/prudential-life-insurance-assessment) 
 
-This script will achieve about 3.600 AMS score in public leadboard. To get start, you need do following step:
-
-1. Compile the XGBoost python lib
+1. Download the data from [here](https://www.kaggle.com/c/prudential-life-insurance-assessment/data)
 ```bash
 cd ../..
 make
