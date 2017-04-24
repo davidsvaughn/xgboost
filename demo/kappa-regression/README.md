@@ -10,5 +10,5 @@ This demonstrates how to use XGBoost Kappa Regression for the [Kaggle Prudential
 3. Run:
 
 ```bash
-./runexp.sh
+bash runexp.sh
 ```
