@@ -1,5 +1,5 @@
 Guide for Kappa Regression
-=====
+--------
 
 This demonstrates how to use XGBoost Kappa Regression for the [Kaggle Prudential Life Insurance Assessment](https://www.kaggle.com/c/prudential-life-insurance-assessment) challenge
 
@@ -12,3 +12,6 @@ This demonstrates how to use XGBoost Kappa Regression for the [Kaggle Prudential
 ```bash
 bash runexp.sh
 ```
+
+
+Alternatively, one can run the python interface demo with: ```python kappa-regression-demo.py```
